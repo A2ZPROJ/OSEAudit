@@ -1,6 +1,6 @@
 [Setup]
 AppName=OSEAudit
-AppVersion=1.4
+AppVersion=1.5
 AppPublisher=A2Z Projetos
 DefaultDirName={localappdata}\A2Z Projetos\OSEAudit
 DefaultGroupName=A2Z Projetos\OSEAudit

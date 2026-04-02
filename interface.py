@@ -37,7 +37,7 @@ from splash import SplashScreen
 
 # ── Constants ──────────────────────────────────────────────────────────────
 NOME_PROGRAMA = "OSEAudit"
-VERSAO        = "1.4"
+VERSAO        = "1.5"
 SUBTITULO     = "Comparação e Auditoria de Documentos OSE"
 GITHUB_REPO   = "A2ZPROJ/OSEAudit"
 
