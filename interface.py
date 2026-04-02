@@ -37,7 +37,7 @@ from splash import SplashScreen
 
 # ── Constants ──────────────────────────────────────────────────────────────
 NOME_PROGRAMA = "OSEAudit"
-VERSAO        = "1.5"
+VERSAO        = "1.6"
 SUBTITULO     = "Comparação e Auditoria de Documentos OSE"
 GITHUB_REPO   = "A2ZPROJ/OSEAudit"
 
@@ -377,7 +377,19 @@ class ComparadorApp(tk.Tk):
         hdr = tk.Frame(self, bg=SURFACE)
         hdr.pack(fill="x")
 
-        # Left — título + subtítulo + pill (ocupa o espaço principal)
+        # Right — logo 2S (empacotado ANTES do ctr para não ser espremido)
+        self._img_2s = _load_logo(_res("assets", "logo_2s.png"), 180, 60, SURFACE)
+        right = tk.Frame(hdr, bg=SURFACE)
+        right.pack(side="right", fill="y", padx=(0, 28), pady=12)
+        if self._img_2s:
+            tk.Label(right, image=self._img_2s,
+                     bg=SURFACE).pack(expand=True)
+        else:
+            tk.Label(right, text="2S ENGENHARIA",
+                     font=("Segoe UI", 11, "bold"),
+                     fg=TXT2, bg=SURFACE).pack(expand=True)
+
+        # Left — título + subtítulo + pill
         ctr = tk.Frame(hdr, bg=SURFACE)
         ctr.pack(side="left", fill="both", expand=True, padx=(28, 0), pady=14)
 
@@ -398,18 +410,6 @@ class ComparadorApp(tk.Tk):
 
         tk.Label(ctr, text=SUBTITULO,
                  font=("Segoe UI", 9), fg=TXT2, bg=SURFACE).pack(anchor="w", pady=(3, 0))
-
-        # Right — logo 2S
-        self._img_2s = _load_logo(_res("assets", "logo_2s.png"), 180, 60, SURFACE)
-        right = tk.Frame(hdr, bg=SURFACE)
-        right.pack(side="right", fill="y", padx=(0, 28), pady=12)
-        if self._img_2s:
-            tk.Label(right, image=self._img_2s,
-                     bg=SURFACE).pack(expand=True)
-        else:
-            tk.Label(right, text="2S ENGENHARIA",
-                     font=("Segoe UI", 11, "bold"),
-                     fg=TXT2, bg=SURFACE).pack(expand=True)
 
         tk.Frame(self, bg=BORDER, height=1).pack(fill="x")
 
