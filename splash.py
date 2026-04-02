@@ -16,7 +16,7 @@ import urllib.error
 import urllib.request
 import json
 
-VERSAO    = "1.7"
+VERSAO    = "1.8"
 SUBTITULO = "COMPARAÇÃO E AUDITORIA DE OSEs"
 
 # ── Palette ────────────────────────────────────────────────────────────────
@@ -111,16 +111,16 @@ class SplashScreen:
         if self._img_a2z:
             tk.Label(hdr, image=self._img_a2z, bg=_BG).pack(side="left", padx=(0, 12))
         else:
-            tk.Label(hdr, text="A2Z", font=("Segoe UI", 12, "bold"),
+            tk.Label(hdr, text="A2Z", font=("Aptos", 12, "bold"),
                      fg=_WHT, bg=_BG).pack(side="left", padx=(0, 12))
 
         brand_txt = tk.Frame(hdr, bg=_BG)
         brand_txt.pack(side="left", fill="y")
         tk.Label(brand_txt, text="A2Z PROJETOS",
-                 font=("Segoe UI", 10, "bold"), fg=_WHT, bg=_BG,
+                 font=("Aptos", 10, "bold"), fg=_WHT, bg=_BG,
                  anchor="w").pack(anchor="w")
         tk.Label(brand_txt, text="Soluções em Engenharia",
-                 font=("Segoe UI", 8), fg=_GRY, bg=_BG,
+                 font=("Aptos", 8), fg=_GRY, bg=_BG,
                  anchor="w").pack(anchor="w")
 
         # Header bottom border
@@ -135,7 +135,7 @@ class SplashScreen:
                              highlightbackground=_RED, highlightthickness=1)
         icon_wrap.pack(side="left", padx=(0, 16))
         icon_wrap.pack_propagate(False)
-        tk.Label(icon_wrap, text="⌕", font=("Segoe UI", 20),
+        tk.Label(icon_wrap, text="⌕", font=("Aptos", 20),
                  fg=_WHT, bg=_RED2).pack(expand=True)
 
         # Product text
@@ -144,13 +144,13 @@ class SplashScreen:
 
         title_row = tk.Frame(prod, bg=_BG)
         title_row.pack(anchor="w")
-        tk.Label(title_row, text="OSE", font=("Segoe UI", 22, "bold"),
+        tk.Label(title_row, text="OSE", font=("Aptos", 22, "bold"),
                  fg=_WHT, bg=_BG).pack(side="left")
-        tk.Label(title_row, text="Audit", font=("Segoe UI", 22),
+        tk.Label(title_row, text="Audit", font=("Aptos", 22),
                  fg=_RED, bg=_BG).pack(side="left")
 
         tk.Label(prod, text=SUBTITULO,
-                 font=("Segoe UI", 7, "bold"), fg=_RED, bg=_BG,
+                 font=("Aptos", 7, "bold"), fg=_RED, bg=_BG,
                  anchor="w").pack(anchor="w", pady=(3, 0))
 
         # Version pill
@@ -166,12 +166,12 @@ class SplashScreen:
         status_row = tk.Frame(status_area, bg=_BG)
         status_row.pack(anchor="w")
 
-        self._dot = tk.Label(status_row, text="●", font=("Segoe UI", 7),
+        self._dot = tk.Label(status_row, text="●", font=("Aptos", 7),
                              fg=_GRY, bg=_BG)
         self._dot.pack(side="left", padx=(0, 6))
 
         self._status_lbl = tk.Label(status_row, text="Verificando atualizações…",
-                                    font=("Segoe UI", 9), fg=_GRY, bg=_BG)
+                                    font=("Aptos", 9), fg=_GRY, bg=_BG)
         self._status_lbl.pack(side="left")
 
         # ── Progress bar (4px) — hidden until download
@@ -197,11 +197,11 @@ class SplashScreen:
         if self._img_2s:
             tk.Label(footer, image=self._img_2s, bg=_BG).pack(side="left", padx=(0, 10))
         else:
-            tk.Label(footer, text="2S", font=("Segoe UI", 9, "bold"),
+            tk.Label(footer, text="2S", font=("Aptos", 9, "bold"),
                      fg=_GRY, bg=_BG).pack(side="left", padx=(0, 10))
 
         tk.Label(footer, text="em parceria com 2S Engenharia e Geotecnologia",
-                 font=("Segoe UI", 8), fg=_GRY, bg=_BG).pack(side="left")
+                 font=("Aptos", 8), fg=_GRY, bg=_BG).pack(side="left")
 
     # ──────────────────────────────────────────── after fade-in
     def _after_fade_in(self):

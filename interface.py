@@ -59,7 +59,7 @@ from splash import SplashScreen
 
 # ── Constants ──────────────────────────────────────────────────────────────
 NOME_PROGRAMA = "OSEAudit"
-VERSAO        = "1.7"
+VERSAO        = "1.8"
 SUBTITULO     = "Comparação e Auditoria de Documentos OSE"
 GITHUB_REPO   = "A2ZPROJ/OSEAudit"
 
@@ -137,12 +137,12 @@ def _apply_theme(name: str):
 _apply_theme(_load_config().get("theme", "dark"))
 
 # ── Font constants ─────────────────────────────────────────────────────────
-F_UI   = ("Segoe UI", 10)
-F_BOLD = ("Segoe UI", 10, "bold")
-F_SMALL= ("Segoe UI",  9)
-F_MED  = ("Segoe UI", 10)
+F_UI   = ("Aptos", 10)
+F_BOLD = ("Aptos", 10, "bold")
+F_SMALL= ("Aptos",  9)
+F_MED  = ("Aptos", 10)
 F_MONO = ("Consolas", 10)
-F_CAP  = ("Segoe UI",  9, "bold")
+F_CAP  = ("Aptos",  9, "bold")
 
 
 # ── Flat button factory ────────────────────────────────────────────────────
@@ -296,7 +296,7 @@ class ComparadorApp(tk.Tk):
         icon_wrap.pack(side="left", padx=(0, 10))
         icon_wrap.pack_propagate(False)
         self._uc_spin_lbl = tk.Label(icon_wrap, text="↻",
-                                     font=("Segoe UI", 14), fg=BLU, bg="#0D1F3C")
+                                     font=("Aptos", 14), fg=BLU, bg="#0D1F3C")
         self._uc_spin_lbl.pack(expand=True)
 
         txt = tk.Frame(top, bg=SURFACE)
@@ -331,7 +331,7 @@ class ComparadorApp(tk.Tk):
         icon_wrap2.pack(side="left", padx=(0, 10))
         icon_wrap2.pack_propagate(False)
         tk.Label(icon_wrap2, text="✓",
-                 font=("Segoe UI", 13, "bold"), fg=GRN, bg="#0A2A1A").pack(expand=True)
+                 font=("Aptos", 13, "bold"), fg=GRN, bg="#0A2A1A").pack(expand=True)
 
         txt2 = tk.Frame(top2, bg=SURFACE)
         txt2.pack(side="left", fill="x", expand=True)
@@ -342,7 +342,7 @@ class ComparadorApp(tk.Tk):
         self._uc_countdown_lbl.pack(anchor="w")
 
         self._uc_now_btn = _btn(top2, text="Agora",
-                                font=("Segoe UI", 9, "bold"),
+                                font=("Aptos", 9, "bold"),
                                 bg="#0A2A1A", fg=GRN, hv_bg="#14532D",
                                 padx=8, pady=3)
         self._uc_now_btn.pack(side="right")
@@ -427,7 +427,7 @@ class ComparadorApp(tk.Tk):
                     rowheight=28, font=F_MED, borderwidth=0)
         s.configure("Treeview.Heading",
                     background=SURFACE, foreground=TXT2,
-                    font=("Segoe UI", 8, "bold"),
+                    font=("Aptos", 8, "bold"),
                     relief="flat", borderwidth=0)
         s.map("Treeview",
               background=[("selected", RED_D)],
@@ -478,12 +478,12 @@ class ComparadorApp(tk.Tk):
                      bg=TOPBAR).pack(side="right", expand=True)
         else:
             tk.Label(right, text="2S ENGENHARIA",
-                     font=("Segoe UI", 11, "bold"),
+                     font=("Aptos", 11, "bold"),
                      fg=TXT2, bg=TOPBAR).pack(side="right", expand=True)
 
         # Theme toggle button (right side, before 2S logo)
         theme_btn = _btn(hdr, text=f"{T['THEME_ICON']} {T['THEME_LABEL']}",
-                         font=("Segoe UI", 9), bg=TOPBAR, fg=TXT3,
+                         font=("Aptos", 9), bg=TOPBAR, fg=TXT3,
                          hv_bg=OVERLAY, hv_fg=TXT,
                          padx=10, pady=6, command=self._toggle_theme)
         theme_btn.pack(side="right", padx=(0, 8))
@@ -495,10 +495,10 @@ class ComparadorApp(tk.Tk):
         name_row = tk.Frame(ctr, bg=TOPBAR)
         name_row.pack(anchor="w")
         tk.Label(name_row, text="OSE",
-                 font=("Segoe UI", 24, "bold"),
+                 font=("Aptos", 24, "bold"),
                  fg=TXT, bg=TOPBAR).pack(side="left")
         tk.Label(name_row, text="Audit",
-                 font=("Segoe UI", 24),
+                 font=("Aptos", 24),
                  fg=RED, bg=TOPBAR).pack(side="left")
 
         # Version pill inline
@@ -508,7 +508,7 @@ class ComparadorApp(tk.Tk):
                  font=("Consolas", 9, "bold"), fg=RED_L, bg=RED_D).pack()
 
         tk.Label(ctr, text=SUBTITULO,
-                 font=("Segoe UI", 9), fg=TXT2, bg=TOPBAR).pack(anchor="w", pady=(3, 0))
+                 font=("Aptos", 9), fg=TXT2, bg=TOPBAR).pack(anchor="w", pady=(3, 0))
 
         tk.Frame(self, bg=BORDER, height=1).pack(fill="x")
 
@@ -538,7 +538,7 @@ class ComparadorApp(tk.Tk):
             row = tk.Frame(panel, bg=SURFACE)
             row.pack(fill="x", pady=5)
 
-            tk.Label(row, text=label, font=("Segoe UI", 9, "bold"),
+            tk.Label(row, text=label, font=("Aptos", 9, "bold"),
                      fg=TXT2, bg=SURFACE, width=13, anchor="w").pack(side="left")
 
             ent = tk.Entry(row, textvariable=var, font=F_MED,
@@ -547,7 +547,7 @@ class ComparadorApp(tk.Tk):
                            selectbackground=RED_D, selectforeground=TXT)
             ent.pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 8))
 
-            b = _btn(row, text="···", font=("Segoe UI", 11, "bold"),
+            b = _btn(row, text="···", font=("Aptos", 11, "bold"),
                      bg=OVERLAY, fg=TXT2, hv_bg=BORDER, hv_fg=TXT,
                      padx=10, pady=3, command=cmd)
             b.pack(side="left")
@@ -606,7 +606,7 @@ class ComparadorApp(tk.Tk):
 
         self._btn_audit = _btn(ctrl,
             text="▶   VERIFICAR ARQUIVOS FALTANTES",
-            font=("Segoe UI", 10, "bold"),
+            font=("Aptos", 10, "bold"),
             bg=RED, fg="#FFFFFF", hv_bg=RED_H,
             pady=9, padx=20, command=self._executar_audit)
         self._btn_audit.pack(side="left")
@@ -882,7 +882,7 @@ class ComparadorApp(tk.Tk):
                        insertbackground=TXT, selectbackground=RED_D)
         ent.pack(side="left", fill="x", expand=True, ipady=6, padx=10)
 
-        bs = _btn(out_row, text="···", font=("Segoe UI", 11, "bold"),
+        bs = _btn(out_row, text="···", font=("Aptos", 11, "bold"),
                   bg=OVERLAY, fg=TXT2, hv_bg=BORDER, hv_fg=TXT,
                   padx=10, pady=3, command=self._browse_saida)
         bs.pack(side="left")
@@ -895,7 +895,7 @@ class ComparadorApp(tk.Tk):
 
         self._btn_run = _btn(ctrl,
             text="▶   EXECUTAR COMPARAÇÃO OSE",
-            font=("Segoe UI", 11, "bold"),
+            font=("Aptos", 11, "bold"),
             bg=RED, fg="#FFFFFF", hv_bg=RED_H,
             pady=10, padx=24, command=self._executar_comp)
         self._btn_run.pack(side="left")
@@ -928,7 +928,7 @@ class ComparadorApp(tk.Tk):
             col = tk.Frame(sub_bar, bg=SURFACE)
             col.pack(side="left")
 
-            b = tk.Button(col, text=label, font=("Segoe UI", 9, "bold"),
+            b = tk.Button(col, text=label, font=("Aptos", 9, "bold"),
                           bg=SURFACE, fg=TXT3,
                           activebackground=SURFACE, activeforeground=TXT,
                           relief="flat", bd=0, cursor="hand2",
@@ -1359,7 +1359,7 @@ class ComparadorApp(tk.Tk):
         sep   = tk.Label(bar, text=" │ ", font=F_SMALL, bg=SURFACE, fg=TXT3)
         cred  = tk.Label(bar,
                          text="Desenvolvido por A2Z Projetos",
-                         font=("Segoe UI", 9), bg=SURFACE, fg=TXT3)
+                         font=("Aptos", 9), bg=SURFACE, fg=TXT3)
         ver   = tk.Label(bar, text=f"v{VERSAO}",
                          font=("Consolas", 9), bg=SURFACE, fg=TXT3)
 
