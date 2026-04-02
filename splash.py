@@ -115,7 +115,7 @@ class SplashScreen:
                      fg=_WHT, bg=_BG).pack(side="left", padx=(0, 12))
 
         brand_txt = tk.Frame(hdr, bg=_BG)
-        brand_txt.pack(side="left", fill="y", justify="left")
+        brand_txt.pack(side="left", fill="y")
         tk.Label(brand_txt, text="A2Z PROJETOS",
                  font=("Segoe UI", 10, "bold"), fg=_WHT, bg=_BG,
                  anchor="w").pack(anchor="w")
