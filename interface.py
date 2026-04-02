@@ -1,5 +1,5 @@
 """
-Interface — OSEAudit v1.0
+Interface — OSEAudit v1.7
 A2Z Projetos em parceria com 2S Engenharia e Geotecnologia
 """
 
@@ -17,12 +17,34 @@ import urllib.request
 from datetime import datetime
 from tkinter import filedialog, messagebox, ttk
 
-# ── Resource helper ────────────────────────────────────────────────────────
+# ── Resource helper (frozen-safe) ─────────────────────────────────────────
 def _res(*parts):
-    base = (os.path.dirname(sys.executable)
-            if getattr(sys, "frozen", False)
-            else os.path.dirname(os.path.abspath(__file__)))
+    if getattr(sys, "frozen", False):
+        base = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+    else:
+        base = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(base, *parts)
+
+# ── Config helpers ─────────────────────────────────────────────────────────
+def _config_path():
+    d = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")),
+                     "A2Z Projetos", "OSEAudit")
+    os.makedirs(d, exist_ok=True)
+    return os.path.join(d, "config.json")
+
+def _load_config():
+    try:
+        with open(_config_path()) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def _save_config(data):
+    try:
+        with open(_config_path(), "w") as f:
+            json.dump(data, f)
+    except Exception:
+        pass
 
 # ── Core imports ───────────────────────────────────────────────────────────
 try:
@@ -37,44 +59,90 @@ from splash import SplashScreen
 
 # ── Constants ──────────────────────────────────────────────────────────────
 NOME_PROGRAMA = "OSEAudit"
-VERSAO        = "1.6"
+VERSAO        = "1.7"
 SUBTITULO     = "Comparação e Auditoria de Documentos OSE"
 GITHUB_REPO   = "A2ZPROJ/OSEAudit"
 
-# ── Color Palette — GitHub Dark inspired ──────────────────────────────────
-BG       = "#0D1117"    # Main window background
-SURFACE  = "#161B22"    # Elevated surface
-CARD     = "#1C2128"    # Cards / inputs
-OVERLAY  = "#21262D"    # Hover state
+# ── Theme palettes ─────────────────────────────────────────────────────────
+_DARK = {
+    "BG": "#0D1117", "SURFACE": "#161B22", "CARD": "#1C2128",
+    "OVERLAY": "#21262D", "BORDER": "#30363D", "BORDER_A": "#6E7681",
+    "TXT": "#F0F6FC", "TXT2": "#B0BEC9", "TXT3": "#6B7A8A",
+    "TOPBAR": "#161B22", "TOPBAR_TXT": "#F0F6FC",
+    "GRN": "#3FB950", "GRN_BG": "#0D2F1F",
+    "AMB": "#D29922", "AMB_BG": "#2A1F00",
+    "ERR": "#F85149", "BLU": "#58A6FF",
+    "LOG_BG": "#010409", "LOG_FG": "#C9D1D9",
+    "RED_D": "#3D0A0A", "RED_L": "#FF7B72",
+    "THEME_ICON": "☀",
+    "THEME_LABEL": "Claro",
+}
+_LIGHT = {
+    "BG": "#F1F5F9", "SURFACE": "#FFFFFF", "CARD": "#F8FAFC",
+    "OVERLAY": "#E2E8F0", "BORDER": "#E2E8F0", "BORDER_A": "#CBD5E1",
+    "TXT": "#0F172A", "TXT2": "#475569", "TXT3": "#94A3B8",
+    "TOPBAR": "#0F172A", "TOPBAR_TXT": "#F1F5F9",
+    "GRN": "#16A34A", "GRN_BG": "#DCFCE7",
+    "AMB": "#D97706", "AMB_BG": "#FEF3C7",
+    "ERR": "#DC2626", "BLU": "#2563EB",
+    "LOG_BG": "#F8FAFC", "LOG_FG": "#334155",
+    "RED_D": "#FEE2E2", "RED_L": "#DC2626",
+    "THEME_ICON": "☾",
+    "THEME_LABEL": "Escuro",
+}
 
-BORDER   = "#30363D"    # Default border
-BORDER_A = "#6E7681"    # Active / focus border
+# ── Fixed palette entries (not theme-sensitive) ────────────────────────────
+RED   = "#DA3633"
+RED_H = "#B91C1C"
 
-RED      = "#DA3633"    # Primary brand red
-RED_H    = "#B91C1C"    # Red hover
-RED_D    = "#3D0A0A"    # Deep red background
-RED_L    = "#FF7B72"    # Light red (text)
+# ── Module-level color vars (populated by _apply_theme) ───────────────────
+BG = SURFACE = CARD = OVERLAY = BORDER = BORDER_A = ""
+TXT = TXT2 = TXT3 = TOPBAR = TOPBAR_TXT = ""
+GRN = GRN_BG = AMB = AMB_BG = ERR = BLU = ""
+LOG_BG = LOG_FG = RED_D = RED_L = ""
+T: dict = {}   # full theme dict (includes THEME_ICON / THEME_LABEL)
 
-TXT      = "#F0F6FC"    # Primary text (mais brilhante)
-TXT2     = "#B0BEC9"    # Secondary text (mais legível)
-TXT3     = "#6B7A8A"    # Muted/dim text (mais visível)
+def _apply_theme(name: str):
+    """Populate module-level color globals from the chosen theme dict."""
+    global BG, SURFACE, CARD, OVERLAY, BORDER, BORDER_A
+    global TXT, TXT2, TXT3, TOPBAR, TOPBAR_TXT
+    global GRN, GRN_BG, AMB, AMB_BG, ERR, BLU
+    global LOG_BG, LOG_FG, RED_D, RED_L, T
 
-GRN      = "#3FB950"    # Success
-GRN_BG   = "#0D2F1F"    # Success background
-AMB      = "#D29922"    # Warning
-AMB_BG   = "#2A1F00"    # Warning background
-ERR      = "#F85149"    # Error
-BLU      = "#58A6FF"    # Info
+    palette = _DARK if name != "light" else _LIGHT
+    T = palette
+    BG       = palette["BG"]
+    SURFACE  = palette["SURFACE"]
+    CARD     = palette["CARD"]
+    OVERLAY  = palette["OVERLAY"]
+    BORDER   = palette["BORDER"]
+    BORDER_A = palette["BORDER_A"]
+    TXT      = palette["TXT"]
+    TXT2     = palette["TXT2"]
+    TXT3     = palette["TXT3"]
+    TOPBAR   = palette["TOPBAR"]
+    TOPBAR_TXT = palette["TOPBAR_TXT"]
+    GRN      = palette["GRN"]
+    GRN_BG   = palette["GRN_BG"]
+    AMB      = palette["AMB"]
+    AMB_BG   = palette["AMB_BG"]
+    ERR      = palette["ERR"]
+    BLU      = palette["BLU"]
+    LOG_BG   = palette["LOG_BG"]
+    LOG_FG   = palette["LOG_FG"]
+    RED_D    = palette["RED_D"]
+    RED_L    = palette["RED_L"]
 
-LOG_BG   = "#010409"    # Terminal background
-LOG_FG   = "#C9D1D9"    # Terminal text
+# Apply theme at import time from saved preference
+_apply_theme(_load_config().get("theme", "dark"))
 
-F_UI     = ("Segoe UI", 10)
-F_BOLD   = ("Segoe UI", 10, "bold")
-F_SMALL  = ("Segoe UI",  9)
-F_MED    = ("Segoe UI", 10)
-F_MONO   = ("Consolas", 10)
-F_CAP    = ("Segoe UI",  9, "bold")
+# ── Font constants ─────────────────────────────────────────────────────────
+F_UI   = ("Segoe UI", 10)
+F_BOLD = ("Segoe UI", 10, "bold")
+F_SMALL= ("Segoe UI",  9)
+F_MED  = ("Segoe UI", 10)
+F_MONO = ("Consolas", 10)
+F_CAP  = ("Segoe UI",  9, "bold")
 
 
 # ── Flat button factory ────────────────────────────────────────────────────
@@ -96,7 +164,9 @@ def _btn(parent, text, font, bg, fg, hv_bg, hv_fg=None,
 
 
 # ── Logo loader ────────────────────────────────────────────────────────────
-def _load_logo(path, max_w, max_h, bg_hex=SURFACE):
+def _load_logo(path, max_w, max_h, bg_hex=None):
+    if bg_hex is None:
+        bg_hex = SURFACE
     try:
         from PIL import Image, ImageTk
         img = Image.open(path).convert("RGBA")
@@ -134,12 +204,12 @@ class ComparadorApp(tk.Tk):
         self._faltantes   = None
 
         # Tab state
-        self._tab_frames     = {}
-        self._tab_btns       = {}
-        self._tab_inds       = {}
-        self._sub_frames     = {}
-        self._sub_btns       = {}
-        self._sub_inds       = {}
+        self._tab_frames = {}
+        self._tab_btns   = {}
+        self._tab_inds   = {}
+        self._sub_frames = {}
+        self._sub_btns   = {}
+        self._sub_inds   = {}
 
         self._configure_styles()
         self._build_ui()
@@ -148,11 +218,18 @@ class ComparadorApp(tk.Tk):
 
     # ──────────────────────────────────────────────────────────── Splash
     def _show_splash(self):
-        SplashScreen(self, on_close=self._after_splash)
+        SplashScreen(
+            self,
+            on_ready=self._after_splash,
+            on_update=self.destroy,
+            versao=VERSAO,
+            github_repo=GITHUB_REPO,
+        )
 
     def _after_splash(self):
         self.deiconify()
         self._centralizar()
+        # Update card acts as fallback if splash had no network
         threading.Thread(target=self._check_updates, daemon=True).start()
 
     # ──────────────────────────────────────────────────────── Auto-update
@@ -176,7 +253,7 @@ class ComparadorApp(tk.Tk):
             pass
 
     def _start_update(self, nova_versao, download_url):
-        """Inicia download silencioso em background — igual ao CodePro."""
+        """Inicia download silencioso em background — fallback update card."""
         self._uc_version_lbl.config(text=f"v{nova_versao} disponível")
         self._uc_show("dl")
         threading.Thread(target=self._download_update_bg,
@@ -205,7 +282,7 @@ class ComparadorApp(tk.Tk):
                         highlightthickness=1)
         self._uc_card = card
 
-        # ── Estado: baixando ───────────────────────────────────────
+        # ── Estado: baixando
         dl = tk.Frame(card, bg=SURFACE, padx=14, pady=12)
         dl.pack(fill="x")
         self._uc_dl_frame = dl
@@ -213,14 +290,13 @@ class ComparadorApp(tk.Tk):
         top = tk.Frame(dl, bg=SURFACE)
         top.pack(fill="x", pady=(0, 10))
 
-        # Ícone
         icon_wrap = tk.Frame(top, bg="#0D1F3C",
-                              highlightbackground="#1E3A5F", highlightthickness=1,
-                              width=32, height=32)
+                             highlightbackground="#1E3A5F", highlightthickness=1,
+                             width=32, height=32)
         icon_wrap.pack(side="left", padx=(0, 10))
         icon_wrap.pack_propagate(False)
         self._uc_spin_lbl = tk.Label(icon_wrap, text="↻",
-                                      font=("Segoe UI", 14), fg=BLU, bg="#0D1F3C")
+                                     font=("Segoe UI", 14), fg=BLU, bg="#0D1F3C")
         self._uc_spin_lbl.pack(expand=True)
 
         txt = tk.Frame(top, bg=SURFACE)
@@ -228,22 +304,21 @@ class ComparadorApp(tk.Tk):
         tk.Label(txt, text="Baixando atualização",
                  font=F_BOLD, fg=TXT, bg=SURFACE).pack(anchor="w")
         self._uc_version_lbl = tk.Label(txt, text="",
-                                         font=F_SMALL, fg=TXT2, bg=SURFACE)
+                                        font=F_SMALL, fg=TXT2, bg=SURFACE)
         self._uc_version_lbl.pack(anchor="w")
 
         self._uc_pct_lbl = tk.Label(top, text="0%",
-                                     font=("Consolas", 10, "bold"),
-                                     fg=BLU, bg=SURFACE)
+                                    font=("Consolas", 10, "bold"),
+                                    fg=BLU, bg=SURFACE)
         self._uc_pct_lbl.pack(side="right")
 
-        # Barra de progresso
         bar_bg = tk.Frame(dl, bg=CARD, height=4)
         bar_bg.pack(fill="x")
         bar_bg.pack_propagate(False)
         self._uc_bar_fill = tk.Frame(bar_bg, bg=BLU, height=4)
         self._uc_bar_fill.place(x=0, y=0, height=4, relwidth=0.0)
 
-        # ── Estado: pronto para instalar ───────────────────────────
+        # ── Estado: pronto para instalar
         rd = tk.Frame(card, bg=SURFACE, padx=14, pady=12)
         self._uc_rd_frame = rd
 
@@ -251,8 +326,8 @@ class ComparadorApp(tk.Tk):
         top2.pack(fill="x", pady=(0, 10))
 
         icon_wrap2 = tk.Frame(top2, bg="#0A2A1A",
-                               highlightbackground="#14532D", highlightthickness=1,
-                               width=32, height=32)
+                              highlightbackground="#14532D", highlightthickness=1,
+                              width=32, height=32)
         icon_wrap2.pack(side="left", padx=(0, 10))
         icon_wrap2.pack_propagate(False)
         tk.Label(icon_wrap2, text="✓",
@@ -263,7 +338,7 @@ class ComparadorApp(tk.Tk):
         tk.Label(txt2, text="Atualização baixada",
                  font=F_BOLD, fg=TXT, bg=SURFACE).pack(anchor="w")
         self._uc_countdown_lbl = tk.Label(txt2, text="Reiniciando em 5s…",
-                                           font=F_SMALL, fg=TXT2, bg=SURFACE)
+                                          font=F_SMALL, fg=TXT2, bg=SURFACE)
         self._uc_countdown_lbl.pack(anchor="w")
 
         self._uc_now_btn = _btn(top2, text="Agora",
@@ -272,7 +347,6 @@ class ComparadorApp(tk.Tk):
                                 padx=8, pady=3)
         self._uc_now_btn.pack(side="right")
 
-        # Barra de countdown (vai diminuindo)
         bar_bg2 = tk.Frame(rd, bg=CARD, height=4)
         bar_bg2.pack(fill="x")
         bar_bg2.pack_propagate(False)
@@ -280,14 +354,12 @@ class ComparadorApp(tk.Tk):
         self._uc_cd_fill.place(x=0, y=0, height=4, relwidth=1.0)
 
     def _uc_show(self, state):
-        """Exibe o card no canto inferior direito."""
         self._uc_dl_frame.pack_forget()
         self._uc_rd_frame.pack_forget()
         if state == "dl":
             self._uc_dl_frame.pack(fill="x")
         else:
             self._uc_rd_frame.pack(fill="x")
-        # Posiciona acima da status bar (26px) com margem de 16px
         self._uc_card.place(relx=1.0, rely=1.0, anchor="se", x=-16, y=-42)
         self._uc_card.lift()
 
@@ -297,12 +369,11 @@ class ComparadorApp(tk.Tk):
     def _uc_set_progress(self, pct):
         self._uc_pct_lbl.config(text=f"{pct}%")
         self._uc_bar_fill.place(x=0, y=0, height=4,
-                                 relwidth=min(1.0, pct / 100))
+                                relwidth=min(1.0, pct / 100))
         self._uc_spin_lbl.config(text="↻" if pct % 20 < 10 else "⟳")
 
     def _uc_start_countdown(self, tmp_path, secs=5):
-        self._uc_now_btn.config(
-            command=lambda: self._install_update(tmp_path))
+        self._uc_now_btn.config(command=lambda: self._install_update(tmp_path))
         self._uc_do_countdown(tmp_path, secs)
 
     def _uc_do_countdown(self, tmp_path, secs):
@@ -311,7 +382,7 @@ class ComparadorApp(tk.Tk):
             return
         self._uc_countdown_lbl.config(text=f"Reiniciando em {secs}s…")
         self._uc_cd_fill.place(x=0, y=0, height=4,
-                                relwidth=max(0.0, secs / 5))
+                               relwidth=max(0.0, secs / 5))
         self.after(1000, self._uc_do_countdown, tmp_path, secs - 1)
 
     def _install_update(self, tmp_path):
@@ -321,12 +392,35 @@ class ComparadorApp(tk.Tk):
         except Exception:
             self._uc_hide()
 
-    # ──────────────────────────────────────────────────────── ttk styles
+    # ──────────────────────────────────────────────────────── Theme toggle
+    def _toggle_theme(self):
+        cfg = _load_config()
+        current = cfg.get("theme", "dark")
+        cfg["theme"] = "light" if current == "dark" else "dark"
+        _save_config(cfg)
+        _apply_theme(cfg["theme"])
+        self._rebuild_ui()
+
+    def _rebuild_ui(self):
+        for w in self.winfo_children():
+            w.destroy()
+        self.configure(bg=BG)
+        # Reset state dicts
+        self._tab_frames = {}
+        self._tab_btns   = {}
+        self._tab_inds   = {}
+        self._sub_frames = {}
+        self._sub_btns   = {}
+        self._sub_inds   = {}
+        self._configure_styles()
+        self._build_ui()
+        self._centralizar()
+
+    # ──────────────────────────────────────────────────────────── ttk styles
     def _configure_styles(self):
         s = ttk.Style(self)
         s.theme_use("clam")
 
-        # Treeview
         s.configure("Treeview",
                     background=CARD, foreground=TXT,
                     fieldbackground=CARD,
@@ -342,18 +436,16 @@ class ComparadorApp(tk.Tk):
               background=[("active", CARD)],
               relief=[("active", "flat")])
 
-        # Progress bar — thin accent stripe
         s.configure("Red.Horizontal.TProgressbar",
                     troughcolor=CARD, background=RED,
                     thickness=3, borderwidth=0)
 
-        # Scrollbars — minimal
         for orient in ("Vertical", "Horizontal"):
             s.configure(f"{orient}.TScrollbar",
                         background=OVERLAY, troughcolor=SURFACE,
                         arrowcolor=TXT3, bordercolor=SURFACE,
                         lightcolor=SURFACE, darkcolor=SURFACE,
-                        width=8 if orient == "Vertical" else 8)
+                        width=8)
         s.map("TScrollbar", background=[("active", BORDER)])
 
     # ──────────────────────────────────────────────────────────── Build UI
@@ -369,38 +461,45 @@ class ComparadorApp(tk.Tk):
         self._build_update_card()
         self._switch_tab("audit")
 
-    # ════════════════════════════════════════════════ HEADER (dark unified)
+    # ════════════════════════════════════════════════ HEADER
     def _build_header(self):
         # Top accent bar
         tk.Frame(self, bg=RED, height=3).pack(fill="x")
 
-        hdr = tk.Frame(self, bg=SURFACE)
+        hdr = tk.Frame(self, bg=TOPBAR)
         hdr.pack(fill="x")
 
-        # Right — logo 2S (empacotado ANTES do ctr para não ser espremido)
-        self._img_2s = _load_logo(_res("assets", "logo_2s.png"), 180, 60, SURFACE)
-        right = tk.Frame(hdr, bg=SURFACE)
+        # Right — logo 2S (packed BEFORE center to avoid being squeezed)
+        self._img_2s = _load_logo(_res("assets", "logo_2s.png"), 180, 60, TOPBAR)
+        right = tk.Frame(hdr, bg=TOPBAR)
         right.pack(side="right", fill="y", padx=(0, 28), pady=12)
         if self._img_2s:
             tk.Label(right, image=self._img_2s,
-                     bg=SURFACE).pack(expand=True)
+                     bg=TOPBAR).pack(side="right", expand=True)
         else:
             tk.Label(right, text="2S ENGENHARIA",
                      font=("Segoe UI", 11, "bold"),
-                     fg=TXT2, bg=SURFACE).pack(expand=True)
+                     fg=TXT2, bg=TOPBAR).pack(side="right", expand=True)
 
-        # Left — título + subtítulo + pill
-        ctr = tk.Frame(hdr, bg=SURFACE)
+        # Theme toggle button (right side, before 2S logo)
+        theme_btn = _btn(hdr, text=f"{T['THEME_ICON']} {T['THEME_LABEL']}",
+                         font=("Segoe UI", 9), bg=TOPBAR, fg=TXT3,
+                         hv_bg=OVERLAY, hv_fg=TXT,
+                         padx=10, pady=6, command=self._toggle_theme)
+        theme_btn.pack(side="right", padx=(0, 8))
+
+        # Left — title + subtitle + version pill
+        ctr = tk.Frame(hdr, bg=TOPBAR)
         ctr.pack(side="left", fill="both", expand=True, padx=(28, 0), pady=14)
 
-        name_row = tk.Frame(ctr, bg=SURFACE)
+        name_row = tk.Frame(ctr, bg=TOPBAR)
         name_row.pack(anchor="w")
         tk.Label(name_row, text="OSE",
                  font=("Segoe UI", 24, "bold"),
-                 fg=TXT, bg=SURFACE).pack(side="left")
+                 fg=TXT, bg=TOPBAR).pack(side="left")
         tk.Label(name_row, text="Audit",
                  font=("Segoe UI", 24),
-                 fg=RED, bg=SURFACE).pack(side="left")
+                 fg=RED, bg=TOPBAR).pack(side="left")
 
         # Version pill inline
         pill = tk.Frame(name_row, bg=RED_D, padx=9, pady=2)
@@ -409,13 +508,12 @@ class ComparadorApp(tk.Tk):
                  font=("Consolas", 9, "bold"), fg=RED_L, bg=RED_D).pack()
 
         tk.Label(ctr, text=SUBTITULO,
-                 font=("Segoe UI", 9), fg=TXT2, bg=SURFACE).pack(anchor="w", pady=(3, 0))
+                 font=("Segoe UI", 9), fg=TXT2, bg=TOPBAR).pack(anchor="w", pady=(3, 0))
 
         tk.Frame(self, bg=BORDER, height=1).pack(fill="x")
 
     # ════════════════════════════════════════════ FOLDER PANEL
     def _build_folders_panel(self):
-        # Section cap label
         cap = tk.Frame(self, bg=BG, padx=20, pady=10)
         cap.pack(fill="x")
         tk.Label(cap, text="DOCUMENTOS",
