@@ -20,7 +20,6 @@ import os, re, sys
 from collections import Counter
 from dataclasses import dataclass, field
 from typing import Optional
-import pdfplumber
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -60,6 +59,7 @@ class Divergencia:
 # ---------------------------------------------------------------------------
 
 def _txt(caminho: str) -> str:
+    import pdfplumber
     texto = ""
     try:
         with pdfplumber.open(caminho) as pdf:

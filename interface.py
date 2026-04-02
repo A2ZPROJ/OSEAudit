@@ -37,7 +37,7 @@ from splash import SplashScreen
 
 # ── Constants ──────────────────────────────────────────────────────────────
 NOME_PROGRAMA = "OSEAudit"
-VERSAO        = "1.1"
+VERSAO        = "1.2"
 SUBTITULO     = "Comparação e Auditoria de Documentos OSE"
 GITHUB_REPO   = "A2ZPROJ/OSEAudit"
 
@@ -55,9 +55,9 @@ RED_H    = "#B91C1C"    # Red hover
 RED_D    = "#3D0A0A"    # Deep red background
 RED_L    = "#FF7B72"    # Light red (text)
 
-TXT      = "#E6EDF3"    # Primary text
-TXT2     = "#8B949E"    # Secondary text
-TXT3     = "#484F58"    # Muted/dim text
+TXT      = "#F0F6FC"    # Primary text (mais brilhante)
+TXT2     = "#B0BEC9"    # Secondary text (mais legível)
+TXT3     = "#6B7A8A"    # Muted/dim text (mais visível)
 
 GRN      = "#3FB950"    # Success
 GRN_BG   = "#0D2F1F"    # Success background
@@ -71,10 +71,10 @@ LOG_FG   = "#C9D1D9"    # Terminal text
 
 F_UI     = ("Segoe UI", 10)
 F_BOLD   = ("Segoe UI", 10, "bold")
-F_SMALL  = ("Segoe UI",  8)
-F_MED    = ("Segoe UI",  9)
-F_MONO   = ("Consolas",  9)
-F_CAP    = ("Segoe UI",  8, "bold")
+F_SMALL  = ("Segoe UI",  9)
+F_MED    = ("Segoe UI", 10)
+F_MONO   = ("Consolas", 10)
+F_CAP    = ("Segoe UI",  9, "bold")
 
 
 # ── Flat button factory ────────────────────────────────────────────────────
@@ -377,45 +377,40 @@ class ComparadorApp(tk.Tk):
         hdr = tk.Frame(self, bg=SURFACE)
         hdr.pack(fill="x")
 
-        # Left — A2Z logo
-        self._img_a2z = _load_logo(_res("assets", "logo_a2z.png"), 160, 60, SURFACE)
-        left = tk.Frame(hdr, bg=SURFACE, width=196)
-        left.pack(side="left", fill="y", padx=(24, 0), pady=14)
-        left.pack_propagate(False)
-        if self._img_a2z:
-            tk.Label(left, image=self._img_a2z, bg=SURFACE, anchor="center").pack(expand=True)
-        else:
-            tk.Label(left, text="A2Z PROJETOS",
-                     font=("Segoe UI", 13, "bold"), fg=RED, bg=SURFACE).pack(expand=True)
+        # Left — título + subtítulo + pill (ocupa o espaço principal)
+        ctr = tk.Frame(hdr, bg=SURFACE)
+        ctr.pack(side="left", fill="both", expand=True, padx=(28, 0), pady=14)
 
-        # Right — 2S logo
-        self._img_2s = _load_logo(_res("assets", "logo_2s.png"), 190, 60, SURFACE)
-        right = tk.Frame(hdr, bg=SURFACE, width=216)
+        name_row = tk.Frame(ctr, bg=SURFACE)
+        name_row.pack(anchor="w")
+        tk.Label(name_row, text="OSE",
+                 font=("Segoe UI", 24, "bold"),
+                 fg=TXT, bg=SURFACE).pack(side="left")
+        tk.Label(name_row, text="Audit",
+                 font=("Segoe UI", 24),
+                 fg=RED, bg=SURFACE).pack(side="left")
+
+        # Version pill inline
+        pill = tk.Frame(name_row, bg=RED_D, padx=9, pady=2)
+        pill.pack(side="left", padx=(10, 0))
+        tk.Label(pill, text=f"v{VERSAO}",
+                 font=("Consolas", 9, "bold"), fg=RED_L, bg=RED_D).pack()
+
+        tk.Label(ctr, text=SUBTITULO,
+                 font=("Segoe UI", 9), fg=TXT2, bg=SURFACE).pack(anchor="w", pady=(3, 0))
+
+        # Right — logo 2S
+        self._img_2s = _load_logo(_res("assets", "logo_2s.png"), 200, 64, SURFACE)
+        right = tk.Frame(hdr, bg=SURFACE, width=224)
         right.pack(side="right", fill="y", padx=(0, 24), pady=14)
         right.pack_propagate(False)
         if self._img_2s:
-            tk.Label(right, image=self._img_2s, bg=SURFACE, anchor="center").pack(expand=True)
+            tk.Label(right, image=self._img_2s,
+                     bg=SURFACE, anchor="center").pack(expand=True)
         else:
             tk.Label(right, text="2S ENGENHARIA",
-                     font=("Segoe UI", 11, "bold"), fg=TXT2, bg=SURFACE).pack(expand=True)
-
-        # Center — title + subtitle + version pill
-        ctr = tk.Frame(hdr, bg=SURFACE)
-        ctr.pack(fill="both", expand=True, pady=12)
-
-        tk.Label(ctr, text=NOME_PROGRAMA,
-                 font=("Segoe UI", 22, "bold"),
-                 fg=TXT, bg=SURFACE).pack()
-
-        tk.Label(ctr, text=SUBTITULO,
-                 font=("Segoe UI", 9), fg=TXT2, bg=SURFACE).pack(pady=(3, 0))
-
-        pill_wrap = tk.Frame(ctr, bg=SURFACE)
-        pill_wrap.pack(pady=(8, 0))
-        pill = tk.Frame(pill_wrap, bg=RED_D, padx=12, pady=3)
-        pill.pack()
-        tk.Label(pill, text=f"v{VERSAO}",
-                 font=("Segoe UI", 8, "bold"), fg=RED_L, bg=RED_D).pack()
+                     font=("Segoe UI", 11, "bold"),
+                     fg=TXT2, bg=SURFACE).pack(expand=True)
 
         tk.Frame(self, bg=BORDER, height=1).pack(fill="x")
 
@@ -1266,15 +1261,17 @@ class ComparadorApp(tk.Tk):
                                  font=F_SMALL, bg=SURFACE, fg=TXT2)
         sep   = tk.Label(bar, text=" │ ", font=F_SMALL, bg=SURFACE, fg=TXT3)
         cred  = tk.Label(bar,
-                         text="A2Z Projetos × 2S Engenharia e Geotecnologia",
-                         font=F_SMALL, bg=SURFACE, fg=TXT3)
-        ver   = tk.Label(bar, text=f"v{VERSAO}", font=F_SMALL, bg=SURFACE, fg=TXT3)
+                         text="Desenvolvido por A2Z Projetos",
+                         font=("Segoe UI", 9), bg=SURFACE, fg=TXT3)
+        ver   = tk.Label(bar, text=f"v{VERSAO}",
+                         font=("Consolas", 9), bg=SURFACE, fg=TXT3)
 
         self._sb_dot.pack(side="left",  padx=(12, 4))
         self._sb_text.pack(side="left")
-        sep.pack(side="left",  padx=4)
-        cred.pack(side="left")
         ver.pack(side="right", padx=12)
+        sep2 = tk.Label(bar, text=" │ ", font=F_SMALL, bg=SURFACE, fg=TXT3)
+        sep2.pack(side="right")
+        cred.pack(side="right")
 
     def _set_status(self, msg, kind="dim"):
         color = {"ok": GRN, "warn": AMB, "err": ERR,
