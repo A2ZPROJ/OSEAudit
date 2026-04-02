@@ -37,7 +37,7 @@ from splash import SplashScreen
 
 # ── Constants ──────────────────────────────────────────────────────────────
 NOME_PROGRAMA = "OSEAudit"
-VERSAO        = "1.3"
+VERSAO        = "1.4"
 SUBTITULO     = "Comparação e Auditoria de Documentos OSE"
 GITHUB_REPO   = "A2ZPROJ/OSEAudit"
 
@@ -316,7 +316,7 @@ class ComparadorApp(tk.Tk):
 
     def _install_update(self, tmp_path):
         try:
-            subprocess.Popen([tmp_path], shell=True)
+            subprocess.Popen([tmp_path, "/VERYSILENT", "/NORESTART"], shell=False)
             self.destroy()
         except Exception:
             self._uc_hide()
@@ -400,13 +400,12 @@ class ComparadorApp(tk.Tk):
                  font=("Segoe UI", 9), fg=TXT2, bg=SURFACE).pack(anchor="w", pady=(3, 0))
 
         # Right — logo 2S
-        self._img_2s = _load_logo(_res("assets", "logo_2s.png"), 200, 64, SURFACE)
-        right = tk.Frame(hdr, bg=SURFACE, width=224)
-        right.pack(side="right", fill="y", padx=(0, 24), pady=14)
-        right.pack_propagate(False)
+        self._img_2s = _load_logo(_res("assets", "logo_2s.png"), 180, 60, SURFACE)
+        right = tk.Frame(hdr, bg=SURFACE)
+        right.pack(side="right", fill="y", padx=(0, 28), pady=12)
         if self._img_2s:
             tk.Label(right, image=self._img_2s,
-                     bg=SURFACE, anchor="center").pack(expand=True)
+                     bg=SURFACE).pack(expand=True)
         else:
             tk.Label(right, text="2S ENGENHARIA",
                      font=("Segoe UI", 11, "bold"),

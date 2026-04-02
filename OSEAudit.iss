@@ -1,6 +1,6 @@
 [Setup]
 AppName=OSEAudit
-AppVersion=1.3
+AppVersion=1.4
 AppPublisher=A2Z Projetos
 DefaultDirName={localappdata}\A2Z Projetos\OSEAudit
 DefaultGroupName=A2Z Projetos\OSEAudit
@@ -31,4 +31,4 @@ Name: "{group}\Desinstalar OSEAudit"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\OSEAudit"; Filename: "{app}\OSEAudit.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\OSEAudit.exe"; Description: "Abrir OSEAudit agora"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\OSEAudit.exe"; Description: "Abrir OSEAudit agora"; Flags: nowait postinstall

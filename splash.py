@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 
 NOME_PROGRAMA  = "OSEAudit"
-VERSAO         = "1.3"
+VERSAO         = "1.4"
 SUBTITULO      = "Comparação e Auditoria de OSEs"
 FABRICANTE     = "A2Z Projetos"
 PARCEIRO       = "2S Engenharia e Geotecnologia"
