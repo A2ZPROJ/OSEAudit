@@ -8,29 +8,23 @@ import sys
 import tkinter as tk
 from tkinter import ttk
 
-NOME_PROGRAMA = "OSEAudit"
-VERSAO        = "1.2"
-SUBTITULO     = "COMPARAÇÃO E AUDITORIA DE OSEs"
-FABRICANTE    = "A2Z PROJETOS"
-FABRICANTE_SUB = "Soluções em Engenharia"
+NOME_PROGRAMA  = "OSEAudit"
+VERSAO         = "1.3"
+SUBTITULO      = "Comparação e Auditoria de OSEs"
+FABRICANTE     = "A2Z Projetos"
+PARCEIRO       = "2S Engenharia e Geotecnologia"
 
-# Paleta CodePro-style (navy escuro + vermelho no lugar do azul)
-_BG    = "#060C18"     # fundo principal — navy muito escuro
-_SRF   = "#0D1626"     # superfície elevada
-_CARD  = "#111E30"     # card/input
-_RED   = "#DA3633"     # accent principal
-_RED2  = "#A0201E"     # accent escuro
-_BLU   = "#DA3633"     # reuse red as accent (brand)
-_BDR   = "rgba(255,255,255,.08)"
-_WHT   = "#F0F6FC"
-_GRY   = "#B0BEC9"
-_DIM   = "#4A5568"
-_DIM2  = "#2D3748"
+_BG   = "#0D1117"
+_SRF  = "#161B22"
+_CARD = "#1C2128"
+_RED  = "#DA3633"
+_RED2 = "#3D0A0A"
+_WHT  = "#F0F6FC"
+_GRY  = "#8B949E"
+_DIM  = "#30363D"
 
-# Rgb tuples para cálculos
-_BG_RGB   = (6,  12, 24)
-_SRF_RGB  = (13, 22, 38)
-_RED_RGB  = (218, 54, 51)
+_BG_RGB  = (13, 17, 23)
+_SRF_RGB = (22, 27, 34)
 
 
 def _res(*parts):
@@ -53,8 +47,8 @@ def _load_img(path, max_w, max_h, bg_rgb=_BG_RGB):
 
 
 class SplashScreen:
-    W = 480
-    H = 300
+    W = 500
+    H = 310
 
     def __init__(self, parent, on_close):
         self.on_close = on_close
@@ -72,110 +66,100 @@ class SplashScreen:
         self.top.geometry(f"{self.W}x{self.H}+{(sw-self.W)//2}+{(sh-self.H)//2}")
 
         self._build()
-        self._fade(0.0, 1.0, 200, lambda: self.top.after(800, self._begin_close))
+        self._fade(0.0, 1.0, 220, lambda: self.top.after(1200, self._begin_close))
 
-    # ──────────────────────────────────────────────────────── build
     def _build(self):
-        # ── Brand header (estilo CodePro) ──────────────────────────
-        hdr = tk.Frame(self.top, bg=_SRF)
-        hdr.pack(fill="x")
+        # ── Borda / outline da janela
+        self.top.configure(highlightbackground=_DIM, highlightthickness=1)
 
-        # Linha divisória sutil abaixo do header
-        hdr_inner = tk.Frame(hdr, bg=_SRF, padx=18, pady=12)
-        hdr_inner.pack(fill="x")
+        # ── Faixa vermelha no topo
+        tk.Frame(self.top, bg=_RED, height=3).pack(fill="x")
 
-        # Logo A2Z (esquerda)
-        self._img_a2z = _load_img(
-            _res("assets", "logo_a2z.png"), 110, 40, _SRF_RGB)
+        # ── Área central — produto
+        center = tk.Frame(self.top, bg=_BG)
+        center.pack(fill="both", expand=True, padx=40, pady=0)
 
-        logo_frame = tk.Frame(hdr_inner, bg=_SRF)
-        logo_frame.pack(side="left")
+        # Espaçamento superior
+        tk.Frame(center, bg=_BG, height=30).pack()
 
-        if self._img_a2z:
-            tk.Label(logo_frame, image=self._img_a2z,
-                     bg=_SRF).pack(side="left", padx=(0, 10))
-        else:
-            tk.Label(logo_frame, text=FABRICANTE,
-                     font=("Segoe UI", 11, "bold"),
-                     fg=_WHT, bg=_SRF).pack(side="left", padx=(0, 10))
+        # Ícone + nome
+        name_row = tk.Frame(center, bg=_BG)
+        name_row.pack()
 
-        brand_txt = tk.Frame(hdr_inner, bg=_SRF)
-        brand_txt.pack(side="left")
-        tk.Label(brand_txt, text=FABRICANTE,
-                 font=("Segoe UI", 10, "bold"),
-                 fg=_WHT, bg=_SRF).pack(anchor="w")
-        tk.Label(brand_txt, text=FABRICANTE_SUB,
-                 font=("Segoe UI", 8),
-                 fg=_DIM, bg=_SRF).pack(anchor="w")
-
-        tk.Frame(self.top, bg="#1A2640", height=1).pack(fill="x")
-
-        # ── Product hero ───────────────────────────────────────────
-        hero = tk.Frame(self.top, bg=_BG, padx=18, pady=14)
-        hero.pack(fill="x")
-
-        # Ícone do produto (quadrado arredondado vermelho com lupa)
-        icon_wrap = tk.Frame(hero, bg=_RED2,
-                              width=48, height=48,
-                              highlightbackground=_RED,
-                              highlightthickness=1)
+        icon_wrap = tk.Frame(name_row, bg=_RED2,
+                             width=44, height=44,
+                             highlightbackground=_RED,
+                             highlightthickness=1)
         icon_wrap.pack(side="left", padx=(0, 14))
         icon_wrap.pack_propagate(False)
         tk.Label(icon_wrap, text="⌕",
-                 font=("Segoe UI", 22), fg=_WHT, bg=_RED2).pack(expand=True)
+                 font=("Segoe UI", 20), fg=_WHT, bg=_RED2).pack(expand=True)
 
-        info = tk.Frame(hero, bg=_BG)
-        info.pack(side="left", fill="x", expand=True)
-
-        name_row = tk.Frame(info, bg=_BG)
-        name_row.pack(anchor="w")
-        tk.Label(name_row, text="OSE",
-                 font=("Segoe UI", 20, "bold"),
+        name_txt = tk.Frame(name_row, bg=_BG)
+        name_txt.pack(side="left")
+        title_row = tk.Frame(name_txt, bg=_BG)
+        title_row.pack(anchor="w")
+        tk.Label(title_row, text="OSE",
+                 font=("Segoe UI", 26, "bold"),
                  fg=_WHT, bg=_BG).pack(side="left")
-        tk.Label(name_row, text="Audit",
-                 font=("Segoe UI", 20),
+        tk.Label(title_row, text="Audit",
+                 font=("Segoe UI", 26),
                  fg=_RED, bg=_BG).pack(side="left")
 
-        tk.Label(info, text=SUBTITULO,
-                 font=("Segoe UI", 8, "bold"),
-                 fg=_RED, bg=_BG).pack(anchor="w", pady=(2, 0))
+        tk.Label(name_txt, text=SUBTITULO,
+                 font=("Segoe UI", 9),
+                 fg=_GRY, bg=_BG).pack(anchor="w", pady=(2, 0))
 
         # Version pill
-        pill = tk.Frame(info, bg="#1A0D0D",
-                         highlightbackground="#5A1A18",
-                         highlightthickness=1,
-                         padx=9, pady=2)
+        pill = tk.Frame(name_txt, bg=_RED2,
+                        padx=8, pady=1)
         pill.pack(anchor="w", pady=(6, 0))
         tk.Label(pill, text=f"v{VERSAO}",
-                 font=("Consolas", 9, "bold"),
-                 fg=_RED, bg="#1A0D0D").pack()
+                 font=("Consolas", 8, "bold"),
+                 fg=_RED, bg=_RED2).pack()
 
-        tk.Frame(self.top, bg="#1A2640", height=1).pack(fill="x")
+        # Separador
+        tk.Frame(center, bg=_DIM, height=1).pack(fill="x", pady=(20, 12))
 
-        # ── Corpo (crédito + info) ─────────────────────────────────
-        body = tk.Frame(self.top, bg=_BG, padx=18, pady=14)
-        body.pack(fill="both", expand=True)
+        # ── Logos das empresas lado a lado
+        logos_row = tk.Frame(center, bg=_BG)
+        logos_row.pack()
 
-        credit_row = tk.Frame(body, bg=_BG)
-        credit_row.pack(fill="x")
+        self._img_a2z = _load_img(_res("assets", "logo_a2z.png"), 90, 36, _BG_RGB)
+        self._img_2s  = _load_img(_res("assets", "logo_2s.png"),  120, 36, _BG_RGB)
 
-        tk.Label(credit_row,
-                 text="Desenvolvido por  ",
-                 font=("Segoe UI", 9),
-                 fg=_DIM, bg=_BG).pack(side="left")
-        tk.Label(credit_row,
-                 text=FABRICANTE,
-                 font=("Segoe UI", 9, "bold"),
-                 fg=_GRY, bg=_BG).pack(side="left")
+        # Bloco A2Z
+        bloco_a2z = tk.Frame(logos_row, bg=_BG)
+        bloco_a2z.pack(side="left", padx=(0, 30))
+        if self._img_a2z:
+            tk.Label(bloco_a2z, image=self._img_a2z,
+                     bg=_BG).pack()
+        else:
+            tk.Label(bloco_a2z, text="A2Z PROJETOS",
+                     font=("Segoe UI", 9, "bold"),
+                     fg=_WHT, bg=_BG).pack()
+        tk.Label(bloco_a2z, text="Desenvolvedor",
+                 font=("Segoe UI", 7), fg=_GRY, bg=_BG).pack()
 
-        tk.Label(body,
-                 text="em parceria com 2S Engenharia e Geotecnologia",
-                 font=("Segoe UI", 8),
-                 fg=_DIM, bg=_BG).pack(anchor="w", pady=(2, 0))
+        # Separador vertical
+        tk.Frame(logos_row, bg=_DIM, width=1).pack(side="left", fill="y", padx=(0, 30))
 
-        # ── Progress bar ───────────────────────────────────────────
+        # Bloco 2S
+        bloco_2s = tk.Frame(logos_row, bg=_BG)
+        bloco_2s.pack(side="left")
+        if self._img_2s:
+            tk.Label(bloco_2s, image=self._img_2s,
+                     bg=_BG).pack()
+        else:
+            tk.Label(bloco_2s, text="2S ENGENHARIA",
+                     font=("Segoe UI", 9, "bold"),
+                     fg=_WHT, bg=_BG).pack()
+        tk.Label(bloco_2s, text="Parceiro",
+                 font=("Segoe UI", 7), fg=_GRY, bg=_BG).pack()
+
+        # ── Barra de progresso + faixa inferior
         bottom = tk.Frame(self.top, bg=_BG)
-        bottom.pack(fill="x", side="bottom", pady=(0, 0))
+        bottom.pack(fill="x", side="bottom")
 
         s = ttk.Style(self.top)
         s.theme_use("clam")
@@ -185,12 +169,11 @@ class SplashScreen:
             bottom, style="Spl.Horizontal.TProgressbar",
             mode="indeterminate")
         self._pb.pack(fill="x")
-        self._pb.start(10)
+        self._pb.start(8)
 
-        # Bottom accent
         tk.Frame(self.top, bg=_RED2, height=3).pack(fill="x", side="bottom")
 
-    # ──────────────────────────────────────────────── animation
+    # ─────────────────────────────────────────── animação
     def _fade(self, start, end, ms, callback=None):
         steps = 20
         delay = max(1, ms // steps)
@@ -213,7 +196,7 @@ class SplashScreen:
             self._pb.stop()
         except Exception:
             pass
-        self._fade(1.0, 0.0, 160, self._close)
+        self._fade(1.0, 0.0, 180, self._close)
 
     def _close(self):
         if self._closed:
