@@ -1,8 +1,8 @@
 [Setup]
 AppName=OSEAudit
-AppVersion=1.0
+AppVersion=1.1
 AppPublisher=A2Z Projetos
-DefaultDirName={autopf}\A2Z Projetos\OSEAudit
+DefaultDirName={localappdata}\A2Z Projetos\OSEAudit
 DefaultGroupName=A2Z Projetos\OSEAudit
 AllowNoIcons=yes
 OutputDir=.
@@ -12,7 +12,7 @@ UninstallDisplayIcon={app}\OSEAudit.exe
 Compression=lzma2/fast
 SolidCompression=no
 WizardStyle=modern
-PrivilegesRequiredOverridesAllowed=dialog
+PrivilegesRequired=lowest
 MinVersion=10.0
 ArchitecturesInstallIn64BitMode=x64compatible
 

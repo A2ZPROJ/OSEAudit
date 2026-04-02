@@ -422,7 +422,7 @@ class ComparadorApp(tk.Tk):
     # ════════════════════════════════════════════ FOLDER PANEL
     def _build_folders_panel(self):
         # Section cap label
-        cap = tk.Frame(self, bg=BG, padx=20, pady=(10, 4))
+        cap = tk.Frame(self, bg=BG, padx=20, pady=10)
         cap.pack(fill="x")
         tk.Label(cap, text="DOCUMENTOS",
                  font=F_CAP, fg=TXT3, bg=BG).pack(side="left")
