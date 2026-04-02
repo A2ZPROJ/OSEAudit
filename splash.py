@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 
 NOME_PROGRAMA = "OSEAudit"
-VERSAO        = "1.0"
+VERSAO        = "1.1"
 SUBTITULO     = "Comparação e Auditoria de Documentos OSE"
 
 _BG   = "#0D1117"
